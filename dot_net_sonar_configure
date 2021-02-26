@@ -1,0 +1,17 @@
+#mcr.microsoft.com/dotnet/sdk:3.1-alpine docker image
+echo "---- INSTALLING JAVA OPEN JDK ----"
+apk add openjdk11
+
+echo "---- SET JAVA_HOME ----"
+export JAVA_HOME="/usr/lib/jvm/java-11-openjdk";
+
+echo "---- INSTALLING DOTNET SONAR SCANNER ----"
+dotnet tool install --global dotnet-sonarscanner --version 5.0.4
+
+echo "---- SET PATH ----"
+export PATH="$PATH:/root/.dotnet/tools:${JAVA_HOME}/bin"
+
+echo "---- SCANNING PROJECT ----"
+dotnet-sonarscanner /k:"<sonar_project_key" /d:sonar.login=%sonar-token% /d:sonar.host.url="<sonar_url" begin
+dotnet build <csproj file of dot net
+dotnet-sonarscanner /d:sonar.login=%sonar-token% end
